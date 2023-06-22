@@ -4,6 +4,7 @@
 
 // This is provided for completeness, however it is strogly recommended you use OpenGL with SDL or GLFW.
 
+#include "main.h"
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
@@ -38,7 +39,9 @@ int main(int, char**)
 {
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
-    WNDCLASSEXA wc = { sizeof(wc), CS_OWNDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, "ImGui Example", NULL };
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+    WNDCLASSEXA wc = { sizeof(wc), CS_OWNDC, WndProc, 0L, 0L, hInstance, NULL, NULL, NULL, NULL, "ImGui Example", NULL };
+    wc.hIcon = ::LoadIcon(hInstance, MAKEINTRESOURCEA(IDI_ICON_1));
     ::RegisterClassExA(&wc);
     HWND hwnd = ::CreateWindowA(wc.lpszClassName, "Dear ImGui Practice", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
