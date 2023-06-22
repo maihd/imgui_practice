@@ -4,3 +4,7 @@ imgui.exp
 imgui.lib
 imgui.dll
 imgui.ini
+
+lib.dll
+lib.lib
+lib*.dll

@@ -14,6 +14,10 @@
 #include <GL/GL.h>
 #include <tchar.h>
 
+// Hot reload
+#define CR_HOST
+#include "cr.h"
+
 // Data stored per platform window
 struct WGL_WindowData { HDC hDC; };
 
@@ -85,15 +89,15 @@ int main(int, char**)
     //IM_ASSERT(font != NULL);
 
     // Our state
-    bool show_demo_window = true;
+    // bool show_demo_window = true;
     // bool show_another_window = false;
     ImVec4 clear_color = ImVec4{ 0.45f, 0.55f, 0.60f, 1.00f };
 
-    struct TestStruct
-    {
-        float x, y;
-    };
-    TestStruct test_struct = { .y = 0.0f, .x = 0.0f };
+    // the host application should initalize a plugin with a context, a plugin
+    cr_plugin lib;
+
+    // the full path to the live-reloadable application
+    cr_plugin_open(lib, "lib.dll");
 
     // Main loop
     bool done = false;
@@ -117,9 +121,13 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        // call the update function at any frequency matters to you, this will give
+        // the real application a chance to run
+        cr_plugin_update(lib);
+
+        // // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+        // if (show_demo_window)
+        //     ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         // {
@@ -164,6 +172,9 @@ int main(int, char**)
         // Present
         ::SwapBuffers(g_MainWindow.hDC);
     }
+
+    // at the end do not forget to cleanup the plugin context
+    cr_plugin_close(lib);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplWin32_Shutdown();
